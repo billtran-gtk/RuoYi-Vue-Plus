@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.huahao.mapper.AcceptanceDetailMapper">
+
+    <select id="selectReceivingForm" resultType="org.dromara.huahao.domain.vo.HAcceptanceDetailVo">
+        SELECT ad.id,ad.asn_no,ad.receipt_no,ad.msl,ad.locator,ad.part_no,ad.quantity,ad.`status`,
+               COALESCE(
+                   (SELECT SUM(rf.quantity) 
+                    FROM h_receiving_form rf 
+                    WHERE rf.acc_no = ad.receipt_no AND rf.part_no = ad.part_no), 0
+               ) AS receivedQuantity
+        FROM `h_acceptance_detail` ad
+        WHERE ad.receipt_no=#{accNo}
+    </select>
+
+    <select id="selectPageListWithReceivedQuantity" resultType="org.dromara.huahao.domain.vo.HAcceptanceDetailVo">
+        SELECT ad.id,ad.asn_no,ad.receipt_no,ad.msl,ad.locator,ad.part_no,ad.quantity,ad.`status`,
+               COALESCE(
+                   (SELECT SUM(rf.quantity) 
+                    FROM h_receiving_form rf 
+                    WHERE rf.acc_no = ad.receipt_no AND rf.part_no = ad.part_no), 0
+               ) AS receivedQuantity
+        FROM `h_acceptance_detail` ad
+        <where>
+            <if test="bo.receiptNo != null and bo.receiptNo != ''">
+                AND ad.receipt_no LIKE CONCAT('%', #{bo.receiptNo}, '%')
+            </if>
+            <if test="bo.asnNo != null and bo.asnNo != ''">
+                AND ad.asn_no LIKE CONCAT('%', #{bo.asnNo}, '%')
+            </if>
+            <if test="bo.partNo != null and bo.partNo != ''">
+                AND ad.part_no LIKE CONCAT('%', #{bo.partNo}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPageListWithReceivedQuantityCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `h_acceptance_detail` ad
+        <where>
+            <if test="receiptNo != null and receiptNo != ''">
+                AND ad.receipt_no LIKE CONCAT('%', #{receiptNo}, '%')
+            </if>
+            <if test="asnNo != null and asnNo != ''">
+                AND ad.asn_no LIKE CONCAT('%', #{asnNo}, '%')
+            </if>
+            <if test="partNo != null and partNo != ''">
+                AND ad.part_no LIKE CONCAT('%', #{partNo}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

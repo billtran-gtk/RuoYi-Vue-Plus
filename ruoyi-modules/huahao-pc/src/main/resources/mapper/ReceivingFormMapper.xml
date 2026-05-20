@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.huahao.mapper.ReceivingFormMapper">
+
+    <select id="selectPallet" resultType="org.dromara.huahao.domain.vo.ReceivingFormVo">
+        select pallet_id
+        from h_receiving_form
+        where acc_no = #{accNo}
+        group by pallet_id
+        order by max(create_time) desc
+    </select>
+</mapper>
